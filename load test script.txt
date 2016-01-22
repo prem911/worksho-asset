@@ -1,0 +1,120 @@
+-- Variable determines appropriate website URL to test.
+-- EDIT this VARIABLE to test your application.
+-- Ensure there is NOT a trailing slash at the end.
+local WEBSITE_URL = "http://java-rediscache-chintamani-1115.mybluemix.net/"
+-- User input we want to randomly generate.
+local KEY1 = string.char(math.random(32, 126))
+local KEY2 = string.char(math.random(32, 126))
+local KEY3 = string.char(math.random(32, 126))
+local VAL1 = math.random(1, 31415926)
+local VAL2 = math.random(1, 31415926)
+local VAL3 = math.random(1, 31415926)
+
+-- Send PUT request to the app with random key-value pair.
+http.request_batch({
+{"GET", WEBSITE_URL .. "/ecaas?operation=put&key=" .. KEY1 .. "&value=" .. VAL1
+.. "&encrypt=false", auto_decompress=true}
+})
+-- Simulate cache refresh by fetching all values.
+http.request_batch({
+{"GET", WEBSITE_URL .. "/ecaas?operation=all&key=" .. KEY1 .. "&value=" .. VAL1
+.. "&encrypt=false", auto_decompress=true}
+})
+-- Send second PUT request to the app with random key-value pair.
+http.request_batch({
+{"GET", WEBSITE_URL .. "/ecaas?operation=put&key=" .. KEY2 .. "&value=" .. VAL2
+.. "&encrypt=false", auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=all&key=" .. KEY2 .. "&value=" .. VAL2
+.. "&encrypt=false", auto_decompress=true}
+})
+http.request_batch({
+{"GET", WEBSITE_URL .. "/ecaas?operation=put&key=" .. KEY3 .. "&value=" .. VAL3
+.. "&encrypt=false", auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=all&key=" .. KEY3 .. "&value=" .. VAL3
+.. "&encrypt=false", auto_decompress=true}
+})
+-- Send GET request to fetch the Value from Key. Then, refresh the data cache.
+http.request_batch({
+{"GET", WEBSITE_URL .. "/ecaas?operation=get&key=" .. KEY1 ..
+"&value=&encrypt=false", auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=all&key=" .. KEY1 .. "&value=" .. VAL1
+.. "&encrypt=false", auto_decompress=true}
+})
+http.request_batch({
+{"GET", WEBSITE_URL .. "/ecaas?operation=get&key=" .. KEY2 ..
+"&value=&encrypt=false", auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=all&key=" .. KEY2 .. "&value=" .. VAL2
+.. "&encrypt=false", auto_decompress=true}
+})
+http.request_batch({
+{"GET", WEBSITE_URL .. "/ecaas?operation=get&key=" .. KEY3 ..
+"&value=&encrypt=false", auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=all&key=" .. KEY3 .. "&value=" .. VAL3
+.. "&encrypt=false", auto_decompress=true}
+})
+-- Delete keys one through three, refreshing the cache after each request
+http.request_batch({
+{"GET", WEBSITE_URL .. "/ecaas?operation=delete&key=" .. KEY1 ..
+"&value=&encrypt=false", auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=all&key=&value=&encrypt=false",
+auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=delete&key=" .. KEY2 ..
+"&value=&encrypt=false", auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=all&key=&value=&encrypt=false",
+auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=delete&key=" .. KEY3 ..
+"&value=&encrypt=false", auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=all&key=&value=&encrypt=false",
+auto_decompress=true}
+})
+-- Send an ENCRYPTED PUT request to the app with the random key-value pair.
+http.request_batch({
+{"GET", WEBSITE_URL .. "/ecaas?operation=put&key=" .. KEY1 .. "&value=" .. VAL1
+.. "&encrypt=true", auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=all&key=" .. KEY1 .. "&value=" .. VAL1
+.. "&encrypt=true", auto_decompress=true}
+})
+http.request_batch({
+{"GET", WEBSITE_URL .. "/ecaas?operation=put&key=" .. KEY2 .. "&value=" .. VAL2
+.. "&encrypt=true", auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=all&key=" .. KEY2 .. "&value=" .. VAL2
+.. "&encrypt=true", auto_decompress=true}
+})
+http.request_batch({
+{"GET", WEBSITE_URL .. "/ecaas?operation=put&key=" .. KEY3 .. "&value=" .. VAL3
+.. "&encrypt=true", auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=all&key=" .. KEY3 .. "&value=" .. VAL3
+.. "&encrypt=true", auto_decompress=true}
+})
+-- Send GET request for ENCRYPTED Value from Key. Then, refresh the data cache.
+http.request_batch({
+{"GET", WEBSITE_URL .. "/ecaas?operation=get&key=" .. KEY1 ..
+"&value=&encrypt=true", auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=all&key=" .. KEY1 ..
+"&value=aJY1vAbJJA2tCx2HN8QoQA%3D%3D&encrypt=true", auto_decompress=true}
+})
+http.request_batch({
+{"GET", WEBSITE_URL .. "/ecaas?operation=get&key=" .. KEY2 ..
+"&value=&encrypt=true", auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=all&key=" .. KEY2 ..
+"&value=3o29aRTtQAPQBq1uW7zSkg%3D%3D&encrypt=true", auto_decompress=true}
+})
+http.request_batch({
+{"GET", WEBSITE_URL .. "/ecaas?operation=get&key=" .. KEY3 ..
+"&value=&encrypt=true", auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=all&key=" .. KEY3 ..
+"&value=zQ7y%2Frb9pnRKfvxoPk%2B3cA%3D%3D&encrypt=true", auto_decompress=true}
+})
+-- Delete Keys one and two, leaving three. Refresh cache after each request.
+http.request_batch({
+{"GET", WEBSITE_URL .. "/ecaas?operation=delete&key=" .. KEY1 ..
+"&value=&encrypt=true", auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=all&key=&value=&encrypt=true",
+auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=delete&key=" .. KEY2 ..
+"&value=&encrypt=true", auto_decompress=true},
+{"GET", WEBSITE_URL .. "/ecaas?operation=all&key=&value=&encrypt=true",
+auto_decompress=true}
+})
+client.sleep(math.random(20,40))
+
